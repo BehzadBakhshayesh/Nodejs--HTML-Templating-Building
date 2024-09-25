@@ -34,6 +34,7 @@ const server = http.createServer((req, res) => {
   const { pathname, query } = url.parse(req.url, true);
   // overview page
   if (pathname === "/" || pathname === "/overview") {
+
     const cardsHtml = datObj.map((el) => replaceTemplate(templateCard, el)).join("");
     const outPut = templateOverView.replace(/{%PRODUCT_CARDS%}/g, cardsHtml);
 
@@ -41,9 +42,8 @@ const server = http.createServer((req, res) => {
     res.end(outPut);
     // product page
   } else if (pathname === "/product") {
+
     const product= datObj[query.id]
-    console.log({product});
-    
     const outPut=  replaceTemplate(templateProduct, product)
 
     res.writeHead(200, { "Content-type": "text/html" });
@@ -51,12 +51,14 @@ const server = http.createServer((req, res) => {
 
     // API
   } else if (pathname === "/api") {
+
     fs.readFile(`${__dirname}/data.json`, "utf-8", (err, data) => {
       res.writeHead(200, { "Content-type": "application/json" });
       res.end(data);
     });
     //Not Found
   } else {
+    
     res.writeHead(404, {
       "Content-type": "text/html",
       "my-own-header": "hello world",
