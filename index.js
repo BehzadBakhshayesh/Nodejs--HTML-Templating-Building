@@ -1,6 +1,7 @@
 const http = require("node:http");
 const fs = require("node:fs");
 const url = require("node:url");
+  // ===================================================================
 
 const replaceTeplate = (temp, product) => {
   let output = temp.replace(/{%PRODUCTNAME%}/g, product.productName);
@@ -17,27 +18,21 @@ const replaceTeplate = (temp, product) => {
   return output;
 };
 
-const templateOverView = fs.readFileSync(
-  `${__dirname}/templates/overview.html`,
-  "utf-8"
-);
-const templateProduct = fs.readFileSync(
-  `${__dirname}/templates/product.html`,
-  "utf-8"
-);
-const templateCard = fs.readFileSync(
-  `${__dirname}/templates/template-card.html`,
-  "utf-8"
-);
+  // ===================================================================
 
+const templateOverView = fs.readFileSync(`${__dirname}/templates/overview.html`,"utf-8");
+const templateProduct = fs.readFileSync(`${__dirname}/templates/product.html`,"utf-8");
+const templateCard = fs.readFileSync(`${__dirname}/templates/template-card.html`,"utf-8");
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
 const datObj = JSON.parse(data);
 
-const server = http.createServer((req, res) => {
   // ===================================================================
-  const pathName = url.parse(req.url, true).pathname;
+
+const server = http.createServer((req, res) => {
+
+  const { pathname, query } = url.parse(req.url, true);
   // overview page
-  if (pathName === "/" || pathName === "/overview") {
+  if (pathname === "/" || pathname === "/overview") {
     res.writeHead(200, { "Content-type": "text/html" });
     const cardsHtml = datObj
       .map((el) => replaceTeplate(templateCard, el))
@@ -45,14 +40,15 @@ const server = http.createServer((req, res) => {
     const outPut = templateOverView.replace(/{%PRODUCT_CARDS%}/g, cardsHtml);
     res.end(outPut);
     // product page
-  } else if (pathName === "/product") {
+  } else if (pathname === "/product") {
     res.end("this is PRODUCT");
-    // api page
-  } else if (pathName === "/api") {
+    // API
+  } else if (pathname === "/api") {
     fs.readFile(`${__dirname}/data.json`, "utf-8", (err, data) => {
       res.writeHead(200, { "Content-type": "application/json" });
       res.end(data);
     });
+    //Not Found
   } else {
     res.writeHead(404, {
       "Content-type": "text/html",
@@ -60,8 +56,10 @@ const server = http.createServer((req, res) => {
     });
     res.end("<h1>PAGE NOT FOUND</h1>");
   }
-  // ===================================================================
+
 });
+
+  // ===================================================================
 
 server.listen(8000, "127.0.0.1", () => {
   console.log("listen on port 8000");
