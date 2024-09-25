@@ -3,7 +3,7 @@ const fs = require("node:fs");
 const url = require("node:url");
   // ===================================================================
 
-const replaceTeplate = (temp, product) => {
+const replaceTemplate = (temp, product) => {
   let output = temp.replace(/{%PRODUCTNAME%}/g, product.productName);
   output = output.replace(/{%IMAGE%}/g, product.image);
   output = output.replace(/{%PRICE%}/g, product.price);
@@ -13,16 +13,17 @@ const replaceTeplate = (temp, product) => {
   output = output.replace(/{%DESCRIPTION%}/g, product.description);
   output = output.replace(/{%ID%}/g, product.id);
 
-  if (!product.organic)
+  if (!product.organic){
     output = output.replace(/{%NOT_ORGANIC%}/g, "not-organic");
+  }
   return output;
 };
 
   // ===================================================================
 
 const templateOverView = fs.readFileSync(`${__dirname}/templates/overview.html`,"utf-8");
+const templateCard = fs.readFileSync(`${__dirname}/templates/card.html`,"utf-8");
 const templateProduct = fs.readFileSync(`${__dirname}/templates/product.html`,"utf-8");
-const templateCard = fs.readFileSync(`${__dirname}/templates/template-card.html`,"utf-8");
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
 const datObj = JSON.parse(data);
 
@@ -33,15 +34,21 @@ const server = http.createServer((req, res) => {
   const { pathname, query } = url.parse(req.url, true);
   // overview page
   if (pathname === "/" || pathname === "/overview") {
-    res.writeHead(200, { "Content-type": "text/html" });
-    const cardsHtml = datObj
-      .map((el) => replaceTeplate(templateCard, el))
-      .join("");
+    const cardsHtml = datObj.map((el) => replaceTemplate(templateCard, el)).join("");
     const outPut = templateOverView.replace(/{%PRODUCT_CARDS%}/g, cardsHtml);
+
+    res.writeHead(200, { "Content-type": "text/html" });
     res.end(outPut);
     // product page
   } else if (pathname === "/product") {
-    res.end("this is PRODUCT");
+    const product= datObj[query.id]
+    console.log({product});
+    
+    const outPut=  replaceTemplate(templateProduct, product)
+
+    res.writeHead(200, { "Content-type": "text/html" });
+    res.end(outPut);
+
     // API
   } else if (pathname === "/api") {
     fs.readFile(`${__dirname}/data.json`, "utf-8", (err, data) => {
