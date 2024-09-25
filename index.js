@@ -24,7 +24,7 @@ const replaceTemplate = (temp, product) => {
 const templateOverView = fs.readFileSync(`${__dirname}/templates/overview.html`,"utf-8");
 const templateCard = fs.readFileSync(`${__dirname}/templates/card.html`,"utf-8");
 const templateProduct = fs.readFileSync(`${__dirname}/templates/product.html`,"utf-8");
-const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
+const data = fs.readFileSync(`${__dirname}/data/data.json`, "utf-8");
 const datObj = JSON.parse(data);
 
   // ===================================================================
