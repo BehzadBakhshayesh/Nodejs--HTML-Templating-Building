@@ -1,17 +1,26 @@
 const http = require("node:http");
 const fs = require("node:fs");
 const url = require("node:url");
+
+const slugify = require('slugify')
+
 const replaceTemplate = require("./modules/replaceTemplate");
 
-  // ===================================================================
 
-const templateOverView = fs.readFileSync(`${__dirname}/templates/overview.html`,"utf-8");
-const templateCard = fs.readFileSync(`${__dirname}/templates/card.html`,"utf-8");
-const templateProduct = fs.readFileSync(`${__dirname}/templates/product.html`,"utf-8");
+
+
+// ===================================================================
+
+const templateOverView = fs.readFileSync(`${__dirname}/templates/overview.html`, "utf-8");
+const templateCard = fs.readFileSync(`${__dirname}/templates/card.html`, "utf-8");
+const templateProduct = fs.readFileSync(`${__dirname}/templates/product.html`, "utf-8");
 const data = fs.readFileSync(`${__dirname}/data/data.json`, "utf-8");
 const datObj = JSON.parse(data);
 
-  // ===================================================================
+// ===================================================================
+const slugs = datObj.map(el => slugify(el.productName, { lower: true }))
+// ===================================================================
+
 
 const server = http.createServer((req, res) => {
 
@@ -24,12 +33,12 @@ const server = http.createServer((req, res) => {
 
     res.writeHead(200, { "Content-type": "text/html" });
     res.end(outPut);
-    
+
     // product page
   } else if (pathname === "/product") {
 
-    const product= datObj[query.id]
-    const outPut=  replaceTemplate(templateProduct, product)
+    const product = datObj[query.id]
+    const outPut = replaceTemplate(templateProduct, product)
 
     res.writeHead(200, { "Content-type": "text/html" });
     res.end(outPut);
@@ -53,7 +62,7 @@ const server = http.createServer((req, res) => {
 
 });
 
-  // ===================================================================
+// ===================================================================
 
 server.listen(8000, "127.0.0.1", () => {
   console.log("listen on port 8000");
