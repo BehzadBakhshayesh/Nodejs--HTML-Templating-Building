@@ -1,23 +1,7 @@
 const http = require("node:http");
 const fs = require("node:fs");
 const url = require("node:url");
-  // ===================================================================
-
-const replaceTemplate = (temp, product) => {
-  let output = temp.replace(/{%PRODUCTNAME%}/g, product.productName);
-  output = output.replace(/{%IMAGE%}/g, product.image);
-  output = output.replace(/{%PRICE%}/g, product.price);
-  output = output.replace(/{%FROM%}/g, product.from);
-  output = output.replace(/{%NUTRIENTS%}/g, product.nutrients);
-  output = output.replace(/{%QUANTITY%}/g, product.quantity);
-  output = output.replace(/{%DESCRIPTION%}/g, product.description);
-  output = output.replace(/{%ID%}/g, product.id);
-
-  if (!product.organic){
-    output = output.replace(/{%NOT_ORGANIC%}/g, "not-organic");
-  }
-  return output;
-};
+const replaceTemplate = require("./modules/replaceTemplate");
 
   // ===================================================================
 
@@ -40,6 +24,7 @@ const server = http.createServer((req, res) => {
 
     res.writeHead(200, { "Content-type": "text/html" });
     res.end(outPut);
+    
     // product page
   } else if (pathname === "/product") {
 
@@ -58,7 +43,7 @@ const server = http.createServer((req, res) => {
     });
     //Not Found
   } else {
-    
+
     res.writeHead(404, {
       "Content-type": "text/html",
       "my-own-header": "hello world",
